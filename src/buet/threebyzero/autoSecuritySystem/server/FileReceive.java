@@ -1,15 +1,17 @@
 package buet.threebyzero.autoSecuritySystem.server;
 
-
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class FileReceive {
-	
+
 	public String hostname = "127.0.0.1";
 	public int port = 5554;
 	public int processedByte;
@@ -17,13 +19,17 @@ public class FileReceive {
 
 	public Socket client;
 	public InputStream inputSt;
+	private String timeForPic;
+	private String imageFileName;
+	private String dateForPic;
+	private String fileName;
 
 	public FileReceive()
 
 	{
 
 		try {
-			client = new Socket(hostname,port);
+			client = new Socket(hostname, port);
 			inputSt = client.getInputStream();
 			System.out.print("hello");
 		} catch (IOException ex) {
@@ -37,9 +43,18 @@ public class FileReceive {
 			FileOutputStream fileOutput;
 			BufferedOutputStream bufferedOutput = null;
 			try {
-						
-				String fileName = "hello.txt";
-				//String fileName="photo1.JPG";
+
+				dateForPic = new SimpleDateFormat("yyyyMMdd")
+						.format(new Date());
+				timeForPic = new SimpleDateFormat("HHmmss").format(new Date());
+
+				fileName = dateForPic + '_' + timeForPic + ".JPG";
+				/*
+				 * we will save image in camera like this format so we won't
+				 * need to send the file name because at the same time when
+				 * camera will call this class it will generate the name for the
+				 * image which is created at the camera in the same name
+				 */
 
 				fileOutput = new FileOutputStream(fileName);
 
@@ -55,7 +70,6 @@ public class FileReceive {
 				bufferedOutput.write(arrayOutput.toByteArray());
 				bufferedOutput.flush();
 				bufferedOutput.close();
-				System.out.print("finish");
 
 			} catch (IOException ex) {
 
@@ -65,6 +79,10 @@ public class FileReceive {
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			} finally {
+				File fToDB = new File(fileName);
+				SaveImageToDatabase sitd = new SaveImageToDatabase(fToDB,
+						dateForPic, timeForPic);
 			}
 		}
 
