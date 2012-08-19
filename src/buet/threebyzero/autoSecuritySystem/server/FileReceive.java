@@ -27,7 +27,6 @@ public class FileReceive {
 	public FileReceive()
 
 	{
-
 		try {
 			client = new Socket(hostname, port);
 			inputSt = client.getInputStream();
